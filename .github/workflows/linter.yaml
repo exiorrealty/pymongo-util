@@ -1,0 +1,16 @@
+name: Linter
+
+on: [pull_request]
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Lint
+        uses: astral-sh/ruff-action@v2
+      - name: Check Format
+        uses: astral-sh/ruff-action@v2
+        with:
+          args: "format --check"
