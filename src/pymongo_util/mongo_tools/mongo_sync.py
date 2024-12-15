@@ -20,14 +20,13 @@ except ImportError:  # pragma: no cover
     raise
 
 
-
 class MongoCollectionBaseClass:
     def __init__(
-            self,
-            mongo_client: MongoClient,
-            database: str,
-            collection: str,
-            soft_delete: bool = MongoConfig.META_SOFT_DEL,
+        self,
+        mongo_client: MongoClient,
+        database: str,
+        collection: str,
+        soft_delete: bool = MongoConfig.META_SOFT_DEL,
     ) -> None:
         self.client = mongo_client
         self.database = database
@@ -62,12 +61,12 @@ class MongoCollectionBaseClass:
         return collection.insert_many(data)
 
     def find(
-            self,
-            query: dict,
-            filter_dict: dict | None = None,
-            sort: Union[None, str, Sequence[Tuple[str, Union[int, str, dict]]]] = None,
-            skip: int = 0,
-            limit: int | None = None,
+        self,
+        query: dict,
+        filter_dict: dict | None = None,
+        sort: Union[None, str, Sequence[Tuple[str, Union[int, str, dict]]]] = None,
+        skip: int = 0,
+        limit: int | None = None,
     ) -> Cursor:
         """
         The function is used to query documents from the collection
@@ -121,11 +120,11 @@ class MongoCollectionBaseClass:
         return collection.find_one(query, filter_dict)
 
     def update_one(
-            self,
-            query: dict,
-            data: dict,
-            upsert: bool = False,
-            strategy: str = "$set",
+        self,
+        query: dict,
+        data: dict,
+        upsert: bool = False,
+        strategy: str = "$set",
     ) -> UpdateResult:
         """
         This function updates a mongo document.
@@ -141,7 +140,9 @@ class MongoCollectionBaseClass:
         collection = db[collection_name]
         return collection.update_one(query, {strategy: data}, upsert=upsert)
 
-    def update_to_set(self, query: dict, param: str, data: Any, upsert: bool = False) -> UpdateResult:
+    def update_to_set(
+        self, query: dict, param: str, data: Any, upsert: bool = False
+    ) -> UpdateResult:
         """
         This function updates a mongo document's array field. This defaults to the `$addToSet` strategy.
         :param query: a mongo query dictionary
@@ -156,7 +157,9 @@ class MongoCollectionBaseClass:
         collection = db[collection_name]
         return collection.update_one(query, {"$addToSet": {param: data}}, upsert=upsert)
 
-    def update_many(self, query: dict, data: dict, upsert: bool = False) -> UpdateResult:
+    def update_many(
+        self, query: dict, data: dict, upsert: bool = False
+    ) -> UpdateResult:
         """
         This function updates multiple mongo documents
         :param query: a mongo query dictionary
@@ -170,7 +173,7 @@ class MongoCollectionBaseClass:
         return collection.update_many(query, {"$set": data}, upsert=upsert)
 
     def find_and_update(
-            self, query: dict, data: dict, upsert: bool = False
+        self, query: dict, data: dict, upsert: bool = False
     ) -> _DocumentType:  # type: ignore[type-var, misc]
         """
         This function finds a document and updates it in a single query
@@ -221,7 +224,13 @@ class MongoCollectionBaseClass:
     def perform_soft_delete(self, query):
         soft_del_query = [
             {"$match": query},
-            {"$addFields": {"deleted": {"on": datetime.now(timezone.utc).replace(tzinfo=timezone.utc)}}},
+            {
+                "$addFields": {
+                    "deleted": {
+                        "on": datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
+                    }
+                }
+            },
             {
                 "$merge": {
                     "into": {
@@ -254,11 +263,11 @@ class MongoCollectionBaseClass:
         return collection.count_documents(query)
 
     def aggregate(
-            self,
-            pipelines: list,
-            let: Mapping[str, Any] | None = None,
-            collation=None,
-            allowDiskUse=False #noqa NOSONAR
+        self,
+        pipelines: list,
+        let: Mapping[str, Any] | None = None,
+        collation=None,
+        allowDiskUse=False,  # noqa NOSONAR
     ) -> CommandCursor[_DocumentType]:
         """
         Perform an aggregation using the aggregation framework on this collection
@@ -273,4 +282,6 @@ class MongoCollectionBaseClass:
         collection_name = self.collection
         db = self.client[database_name]
         collection = db[collection_name]
-        return collection.aggregate(pipelines, let=let, collation=collation, allowDiskUse=allowDiskUse)
+        return collection.aggregate(
+            pipelines, let=let, collation=collation, allowDiskUse=allowDiskUse
+        )

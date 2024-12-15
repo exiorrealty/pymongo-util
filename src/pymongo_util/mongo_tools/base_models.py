@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
+
 class AGGridFilterModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
@@ -14,6 +15,7 @@ class AGGridFilterModel(BaseModel):
     quick_filter: bool = False
     flag_columns: list = []
     flag_filters: list = []
+
 
 class AGGridTableRequest(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)

@@ -20,7 +20,9 @@ class AGGridMongoQueryUtil:
         self.skip = {}
         self.limit = {}
 
-    def build_query(self, req_body: AGGridTableRequest, *, additional_projection: dict | None = None) -> list[dict]:
+    def build_query(
+        self, req_body: AGGridTableRequest, *, additional_projection: dict | None = None
+    ) -> list[dict]:
         try:
             start_row = req_body.start_row
             end_row = req_body.end_row
@@ -33,7 +35,9 @@ class AGGridMongoQueryUtil:
 
             if filters := req_body.filters:
                 self.form_filter_query(
-                    sort_model=filters.sort_model, filter_model=filters.filter_model, value_cols=filters.value_cols
+                    sort_model=filters.sort_model,
+                    filter_model=filters.filter_model,
+                    value_cols=filters.value_cols,
                 )
 
             stages = (
@@ -53,13 +57,17 @@ class AGGridMongoQueryUtil:
                         self.aggregation_pipeline.append(stage)
 
             if additional_projection:
-                self.aggregation_pipeline.append({MG_AGG_PROJECT: additional_projection})
+                self.aggregation_pipeline.append(
+                    {MG_AGG_PROJECT: additional_projection}
+                )
             return self.aggregation_pipeline
         except Exception as e:
             logging.exception(e)
             raise QueryFormationError from e
 
-    def form_filter_query(self, sort_model: list, filter_model: dict, value_cols: list) -> None:
+    def form_filter_query(
+        self, sort_model: list, filter_model: dict, value_cols: list
+    ) -> None:
         is_filtering = len(filter_model) > 0
         if is_filtering:
             for column, filter_obj in filter_model.items():
@@ -72,7 +80,9 @@ class AGGridMongoQueryUtil:
             self.form_sort_query(sort_model=sort_model)
 
         if value_cols:
-            self.value_col_filter = {MG_AGG_PROJECT: {"_id": 0} | {col: 1 for col in value_cols}}
+            self.value_col_filter = {
+                MG_AGG_PROJECT: {"_id": 0} | {col: 1 for col in value_cols}
+            }
 
     def form_sort_query(self, sort_model: list) -> None:
         _sort = {}
@@ -85,20 +95,46 @@ class AGGridMongoQueryUtil:
     def build_text_query(filter_obj, column) -> dict:
         try:
             query_map = {
-                "contains": {column: {MG_AGG_REGEX: filter_obj["filter"], MG_AGG_OPTIONS: "i"}},
+                "contains": {
+                    column: {MG_AGG_REGEX: filter_obj["filter"], MG_AGG_OPTIONS: "i"}
+                },
                 "equals": {column: filter_obj["filter"]},
                 "notEqual": {column: {"$ne": filter_obj["filter"]}},
-                "notContains": {column: {"$not": {MG_AGG_REGEX: filter_obj["filter"], MG_AGG_OPTIONS: "i"}}},
-                "startsWith": {column: {MG_AGG_REGEX: "^" + filter_obj["filter"], MG_AGG_OPTIONS: "i"}},
-                "endsWith": {column: {MG_AGG_REGEX: filter_obj["filter"] + "$", MG_AGG_OPTIONS: "i"}},
-                "blank": {"$or": [{column: {MG_AGG_EMPTY: True, "$eq": ""}}, {column: {MG_AGG_EMPTY: False}}]},
+                "notContains": {
+                    column: {
+                        "$not": {
+                            MG_AGG_REGEX: filter_obj["filter"],
+                            MG_AGG_OPTIONS: "i",
+                        }
+                    }
+                },
+                "startsWith": {
+                    column: {
+                        MG_AGG_REGEX: "^" + filter_obj["filter"],
+                        MG_AGG_OPTIONS: "i",
+                    }
+                },
+                "endsWith": {
+                    column: {
+                        MG_AGG_REGEX: filter_obj["filter"] + "$",
+                        MG_AGG_OPTIONS: "i",
+                    }
+                },
+                "blank": {
+                    "$or": [
+                        {column: {MG_AGG_EMPTY: True, "$eq": ""}},
+                        {column: {MG_AGG_EMPTY: False}},
+                    ]
+                },
                 "notBlank": {column: {"$exists": True, "$ne": ""}},
                 "false": {column: False},
                 "true": {column: True},
             }
             return query_map[filter_obj["type"]]
         except KeyError as e:
-            raise NotImplementedError(f'given text search is not supported: {filter_obj["type"]}') from e
+            raise NotImplementedError(
+                f'given text search is not supported: {filter_obj["type"]}'
+            ) from e
 
     @staticmethod
     def build_number_query(filter_obj, column) -> dict:
@@ -110,21 +146,39 @@ class AGGridMongoQueryUtil:
                 "lessThanOrEqual": {column: {"$lte": filter_obj["filter"]}},
                 "greaterThan": {column: {"$gt": filter_obj["filter"]}},
                 "greaterThanOrEqual": {column: {"$gte": filter_obj["filter"]}},
-                "inRange": {column: {"$and": [{"$lt": filter_obj["filterTo"]}, {"$gt": filter_obj["filter"]}]}},
-                "blank": {"$or": [{column: {MG_AGG_EMPTY: True, "$eq": ""}}, {column: {MG_AGG_EMPTY: False}}]},
+                "inRange": {
+                    column: {
+                        "$and": [
+                            {"$lt": filter_obj["filterTo"]},
+                            {"$gt": filter_obj["filter"]},
+                        ]
+                    }
+                },
+                "blank": {
+                    "$or": [
+                        {column: {MG_AGG_EMPTY: True, "$eq": ""}},
+                        {column: {MG_AGG_EMPTY: False}},
+                    ]
+                },
                 "notBlank": {column: {"$exists": True, "$ne": ""}},
                 "false": {column: False},
                 "true": {column: True},
             }
             return query_map[filter_obj["type"]]
         except KeyError as e:
-            raise NotImplementedError(f'given text search is not supported: {filter_obj["type"]}') from e
+            raise NotImplementedError(
+                f'given text search is not supported: {filter_obj["type"]}'
+            ) from e
 
     def build_date_query(self, filter_obj, column) -> dict:
         return self.build_number_query(filter_obj, column)
 
     def simple_search_query(self, filter_obj, column) -> dict:
-        func_map = {"text": self.build_text_query, "number": self.build_number_query, "date": self.build_date_query}
+        func_map = {
+            "text": self.build_text_query,
+            "number": self.build_number_query,
+            "date": self.build_date_query,
+        }
         filter_type = filter_obj.get("filterType", "undef")
         if func := func_map.get(filter_type):
             return func(filter_obj, column)

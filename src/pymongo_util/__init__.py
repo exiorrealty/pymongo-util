@@ -36,7 +36,6 @@ Example:
     ```
 """
 
-from .__version__ import __version__
 from .mongo_tools.mongo_util import MongoConnect
 from .mongo_tools.util_configs import MongoConfig
 
@@ -46,4 +45,4 @@ mongo_client = mongo_obj()
 
 CollectionBaseClass = mongo_obj.get_base_class()
 
-__all__ = ["mongo_client", "CollectionBaseClass", "__version__", "MongoConfig", "RedisConfig"]
+__all__ = ["mongo_client", "CollectionBaseClass", "MongoConfig"]

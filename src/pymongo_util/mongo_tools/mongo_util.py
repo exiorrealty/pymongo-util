@@ -1,4 +1,4 @@
-""" Mongo DB utility
+"""Mongo DB utility
 All definitions related to mongo db is defined in this module
 """
 
