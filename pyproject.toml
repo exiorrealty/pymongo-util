@@ -1,7 +1,7 @@
 [project]
 name = "pymongo-util"
 version = "0.1.0"
-description = "Add your description here"
+description = "PyMongo Util is a utility package that simplifies interaction with MongoDB using PyMongo."
 readme = "README.md"
 authors = [
     { name = "Faizan Azim", email = "faizanazim11@gmail.com" },
@@ -19,9 +19,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
-    "mongomock>=4.3.0",
-    "pre-commit>=4.0.1",
-    "pytest>=8.3.4",
-    "ruff>=0.8.3",
-]
+dev = ["mongomock>=4.3.0", "pre-commit>=4.0.1", "pytest>=8.3.4", "ruff>=0.8.3"]

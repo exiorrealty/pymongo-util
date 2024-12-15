@@ -15,8 +15,8 @@ pip install pymongo-util
 1. Create a class that inherits `CollectionBaseClass`.
 2. Pass `mongo_client` or any other PyMongo compatible client during initialization.
 
-
 Example
+
 ```python
 from pymongo_util import mongo_client, CollectionBaseClass
 
