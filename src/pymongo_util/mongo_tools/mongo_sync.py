@@ -173,7 +173,7 @@ class MongoCollectionBaseClass:
         return collection.update_many(query, {"$set": data}, upsert=upsert)
 
     def find_and_update(
-        self, query: dict, data: dict, upsert: bool = False
+        self, query: dict, data: dict, upsert: bool = False, strategy: str = "$set",
     ) -> _DocumentType:  # type: ignore[type-var, misc]
         """
         This function finds a document and updates it in a single query
@@ -188,7 +188,7 @@ class MongoCollectionBaseClass:
         collection = db[collection_name]
         return collection.find_one_and_update(
             query,
-            {"$set": data},
+            {strategy: data},
             return_document=ReturnDocument.AFTER,
             upsert=upsert,
         )
