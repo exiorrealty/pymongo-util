@@ -173,13 +173,18 @@ class MongoCollectionBaseClass:
         return collection.update_many(query, {"$set": data}, upsert=upsert)
 
     def find_and_update(
-        self, query: dict, data: dict, upsert: bool = False, strategy: str = "$set",
+        self,
+        query: dict,
+        data: dict,
+        upsert: bool = False,
+        strategy: str = "$set",
     ) -> _DocumentType:  # type: ignore[type-var, misc]
         """
         This function finds a document and updates it in a single query
         :param query: a mongo query dictionary
         :param data: data to be updated with. The behaviour is as per strategy that is passed.
         :param upsert: Boolean flag to upsert document, if the query does not match
+        :param strategy: update strategy (refer mongo documentation)
         :return: Updated document
         """
         database_name = self.database
