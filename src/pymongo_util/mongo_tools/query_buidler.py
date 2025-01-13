@@ -133,7 +133,7 @@ class AGGridMongoQueryUtil:
             return query_map[filter_obj["type"]]
         except KeyError as e:
             raise NotImplementedError(
-                f'given text search is not supported: {filter_obj["type"]}'
+                f"given text search is not supported: {filter_obj['type']}"
             ) from e
 
     @staticmethod
@@ -167,7 +167,7 @@ class AGGridMongoQueryUtil:
             return query_map[filter_obj["type"]]
         except KeyError as e:
             raise NotImplementedError(
-                f'given text search is not supported: {filter_obj["type"]}'
+                f"given text search is not supported: {filter_obj['type']}"
             ) from e
 
     def build_date_query(self, filter_obj, column) -> dict:
